@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 2.1.0 - 2021-05-24
+
+- The `source` function is now called even when the input value is completely deleted, this fixes a race condition which is present if using an async `source` function.
+
+
 ## 2.0.3 - 2020-07-01
 
 ### Fixes
