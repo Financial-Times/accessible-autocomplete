@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 2.1.1 - 2021-06-24
+
+- A fix to prevent suggestions being cleared when the input is click.
+
 ## 2.1.0 - 2021-05-24
 
 - The `source` function is now called even when the input value is completely deleted, this fixes a race condition which is present if using an async `source` function.
