@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixes
+
+- [Pull request #5: Handle query change when the text length does not change](https://github.com/Financial-Times/accessible-autocomplete/pull/5).
+
 ## 2.1.1 - 2021-06-24
 
 - A fix to prevent suggestions being cleared when the input is click.
