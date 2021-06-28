@@ -5,6 +5,7 @@
 ### Fixes
 
 - [Pull request #5: Handle query change when the text length does not change](https://github.com/Financial-Times/accessible-autocomplete/pull/5).
+- [Pull request #3: If no option is focused, remove the aria-activedescendant attribute from the input](https://github.com/Financial-Times/accessible-autocomplete/pull/3)
 
 ## 2.1.1 - 2021-06-24
 
