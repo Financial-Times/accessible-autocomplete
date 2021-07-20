@@ -519,7 +519,7 @@ export default class Autocomplete extends Component {
           role='combobox'
           required={required}
           value={query}
-          />
+        />
 
         {dropdownArrow}
 
