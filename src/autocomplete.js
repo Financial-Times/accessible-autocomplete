@@ -51,7 +51,7 @@ export default class Autocomplete extends Component {
     tNoResults: () => 'No results found',
     tAssistiveHint: () => 'When autocomplete results are available use up and down arrows to review and enter to select.  Touch device users, explore by touch or with swipe gestures.',
     dropdownArrow: DropdownArrowDown,
-    ariaLabelledBy: undefined | ''
+    ariaLabelledBy: undefined || ''
   }
 
   elementReferences = {}
@@ -519,7 +519,7 @@ export default class Autocomplete extends Component {
           role='combobox'
           required={required}
           value={query}
-          />
+        />
 
         {dropdownArrow}
 
