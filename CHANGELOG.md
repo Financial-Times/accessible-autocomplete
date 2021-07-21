@@ -2,11 +2,16 @@
 
 ## Unreleased
 
-- Adds the ariaLabelledBy property, addressing [an issue reported by AXE tests](https://github.com/alphagov/accessible-autocomplete/issues/361)
+## 2.2.0 - 2021-07-21
 
 ### Fixes
 
+- Adds the ariaLabelledBy property, addressing [an issue reported by AXE tests](https://github.com/alphagov/accessible-autocomplete/issues/361)
+
+
 ## 2.1.2 - 2021-06-28
+
+### Fixes
 
 - [Pull request #5: Handle query change when the text length does not change](https://github.com/Financial-Times/accessible-autocomplete/pull/5).
 - [Pull request #3: If no option is focused, remove the aria-activedescendant attribute from the input](https://github.com/Financial-Times/accessible-autocomplete/pull/3)
