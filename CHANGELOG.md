@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 2.2.1 - 2021-07-21
+
+### Fixes
+
+- [Pull request #7](https://github.com/Financial-Times/accessible-autocomplete/pull/7): Sets the default value for the ariaLabelledBy property to `undefined`
+
 ## 2.2.0 - 2021-07-21
 
 ### Fixes
