@@ -274,7 +274,7 @@ Type:
 
 This object defines templates (functions) that are used for displaying parts of the autocomplete.
 
-`inputValue` is a function that receives one argument, the currently selected suggestion. It returns the string value to be inserted into the input.
+`inputValue` is a function that receives two arguments: the currently selected suggestion and the query value (the latter to use as a basis for highlighting the suggestion). It returns the string value to be inserted into the input.
 
 `suggestion` is a function that receives one argument, a suggestion to be displayed. It is used when rendering suggestions, and should return a string, which can contain HTML. :warning: **Caution:** because this function allows you to output arbitrary HTML, you should [make sure it's trusted](https://en.wikipedia.org/wiki/Cross-site_scripting), and accessible.
 
