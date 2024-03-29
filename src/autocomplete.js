@@ -51,6 +51,7 @@ export default class Autocomplete extends Component {
     tNoResults: () => 'No results found',
     tAssistiveHint: () => 'When autocomplete results are available use up and down arrows to review and enter to select.  Touch device users, explore by touch or with swipe gestures.',
     dropdownArrow: DropdownArrowDown,
+    ariaLabelledBy: undefined,
     menuAttributes: {},
     inputClasses: null,
     hintClasses: null,
@@ -227,7 +228,7 @@ export default class Autocomplete extends Component {
       ariaHint: queryEmpty
     })
 
-    const searchForOptions = showAllValues || (!queryEmpty && queryChanged && queryLongEnough)
+    const searchForOptions = showAllValues || (queryChanged && queryLongEnough)
     if (searchForOptions) {
       source(query, (options) => {
         const optionsAvailable = options.length > 0
@@ -238,10 +239,17 @@ export default class Autocomplete extends Component {
           validChoiceMade: false
         })
       })
-    } else if (queryEmpty || !queryLongEnough) {
-      this.setState({
-        menuOpen: false,
-        options: []
+    }
+
+    if (!queryLongEnough) {
+      source('', (options) => {
+        const optionsAvailable = options.length > 0
+        this.setState({
+          menuOpen: optionsAvailable,
+          options,
+          selected: (autoselect && optionsAvailable) ? 0 : -1,
+          validChoiceMade: false
+        })
       })
     }
   }
@@ -422,6 +430,7 @@ export default class Autocomplete extends Component {
       tStatusResults,
       tAssistiveHint,
       dropdownArrow: dropdownArrowFactory,
+      ariaLabelledBy,
       menuAttributes,
       inputClasses,
       hintClasses,
@@ -456,7 +465,7 @@ export default class Autocomplete extends Component {
     const ariaProps = {
       'aria-describedby': ariaHint ? assistiveHintID : null,
       'aria-expanded': menuOpen ? 'true' : 'false',
-      'aria-activedescendant': optionFocused ? `${id}__option--${focused}` : null,
+      'aria-activedescendant': optionFocused ? `${id}__option--${focused}` : undefined,
       'aria-owns': `${id}__listbox`,
       'aria-autocomplete': (this.hasAutoselect()) ? 'both' : 'list'
     }
@@ -514,7 +523,8 @@ export default class Autocomplete extends Component {
       id: `${id}__listbox`,
       role: 'listbox',
       className: menuClassList.join(' '),
-      onMouseLeave: this.handleListMouseLeave
+      onMouseLeave: this.handleListMouseLeave,
+      'aria-labelledby': ariaLabelledBy
     }
 
     // Preact would override our computed `className`

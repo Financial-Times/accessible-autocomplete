@@ -1,6 +1,6 @@
 {
-  "name": "accessible-autocomplete",
-  "version": "2.0.4",
+  "name": "@financial-times/accessible-autocomplete",
+  "version": "2.2.1",
   "main": "dist/accessible-autocomplete.min.js",
   "style": "dist/accessible-autocomplete.min.css",
   "description": "An autocomplete component, built to be accessible.",
@@ -22,7 +22,6 @@
     "karma:dev": "cross-env NODE_ENV=test karma start test/karma.config.js",
     "karma": "npm run karma:dev -- --single-run",
     "prepare": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module",
-    "preversion": "npm test",
     "standard": "standard",
     "pretest": "npm run build",
     "test": "run-p standard karma wdio",
