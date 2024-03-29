@@ -51,7 +51,6 @@ export default class Autocomplete extends Component {
     tNoResults: () => 'No results found',
     tAssistiveHint: () => 'When autocomplete results are available use up and down arrows to review and enter to select.  Touch device users, explore by touch or with swipe gestures.',
     dropdownArrow: DropdownArrowDown,
-    ariaLabelledBy: undefined,
     menuAttributes: {},
     inputClasses: null,
     hintClasses: null,
@@ -430,7 +429,6 @@ export default class Autocomplete extends Component {
       tStatusResults,
       tAssistiveHint,
       dropdownArrow: dropdownArrowFactory,
-      ariaLabelledBy,
       menuAttributes,
       inputClasses,
       hintClasses,
@@ -523,8 +521,7 @@ export default class Autocomplete extends Component {
       id: `${id}__listbox`,
       role: 'listbox',
       className: menuClassList.join(' '),
-      onMouseLeave: this.handleListMouseLeave,
-      'aria-labelledby': ariaLabelledBy
+      onMouseLeave: this.handleListMouseLeave
     }
 
     // Preact would override our computed `className`
