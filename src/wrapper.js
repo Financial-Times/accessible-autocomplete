@@ -12,12 +12,8 @@ function accessibleAutocomplete (options) {
 }
 
 const createSimpleEngine = (values) => (query, syncResults) => {
-  if (!query) {
-    syncResults([])
-  } else {
-    var matches = values.filter(r => r.toLowerCase().indexOf(query.toLowerCase()) !== -1)
-    syncResults(matches)
-  }
+  const matches = values.filter(r => r.toLowerCase().indexOf(query.toLowerCase()) !== -1)
+  syncResults(matches)
 }
 
 accessibleAutocomplete.enhanceSelectElement = (configurationOptions) => {
@@ -25,7 +21,7 @@ accessibleAutocomplete.enhanceSelectElement = (configurationOptions) => {
 
   // Set defaults.
   if (!configurationOptions.source) {
-    let availableOptions = [].filter.call(configurationOptions.selectElement.options, option => (option.value || configurationOptions.preserveNullOptions))
+    const availableOptions = [].filter.call(configurationOptions.selectElement.options, option => (option.value || configurationOptions.preserveNullOptions))
     configurationOptions.source = availableOptions.map(option => option.textContent || option.innerText)
   }
   configurationOptions.onConfirm = configurationOptions.onConfirm || (query => {
@@ -54,7 +50,7 @@ accessibleAutocomplete.enhanceSelectElement = (configurationOptions) => {
 
   accessibleAutocomplete({
     ...configurationOptions,
-    element: element
+    element
   })
 
   configurationOptions.selectElement.style.display = 'none'
