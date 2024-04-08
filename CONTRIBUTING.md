@@ -10,9 +10,9 @@ You will need a recent version of Node and npm installed. Check the `.nvmrc` for
 
 ```bash
 $ node -v
-v14.21.3
+v18
 $ npm -v
-v6.14.18
+v8
 ```
 
 To install Node (with npm) locally on macOS, we recommend [brew](https://brew.sh) with
