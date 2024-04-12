@@ -1,16 +1,10 @@
 # Accessible autocomplete
 
----
+The accessible autocomplete is a component that helps users choose answers from a list you provide. You can also use it to make the answers you get from users more consistent.
 
-**We cannot currently respond to issues or pull requests.**
-
-You can still raise issues or pull requests if you want to. As soon as we’re able to, we will prioritise dealing with any bugs that have been raised by people in the UK public sector. We cannot prioritise adding new features.
-
----
+If you're asking users to provide their country or territory, the [govuk-country-and-territory-autocomplete](https://github.com/alphagov/govuk-country-and-territory-autocomplete/blob/main/README.md) might be more appropriate.
 
 [![npm version](https://img.shields.io/npm/v/accessible-autocomplete.svg)](http://npm.im/accessible-autocomplete)
-[![Build Status](https://travis-ci.com/alphagov/accessible-autocomplete.svg?branch=master)](https://travis-ci.com/alphagov/accessible-autocomplete)
-[![Coverage Status](https://coveralls.io/repos/github/alphagov/accessible-autocomplete/badge.svg?branch=master)](https://coveralls.io/github/alphagov/accessible-autocomplete?branch=master)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![gzip size](http://img.badgesize.io/https://unpkg.com/accessible-autocomplete/dist/accessible-autocomplete.min.js?compression=gzip)](https://unpkg.com/accessible-autocomplete/dist/accessible-autocomplete.min.js)
 
@@ -20,9 +14,21 @@ You can still raise issues or pull requests if you want to. As soon as we’re a
 
 - **Accessibility**: Following WAI-ARIA best practices and testing with assistive technologies.
 - **User experience**: Supporting a wide variety of user needs.
-- **Compatibility**: Working with as many browsers, devices, and assistive technologies as possible.
+- **Compatibility**: Working with [recommended browsers](https://www.gov.uk/service-manual/technology/designing-for-different-browsers-and-devices#browsers-to-test-in) and [assistive technologies](https://www.gov.uk/service-manual/technology/testing-with-assistive-technologies#which-assistive-technologies-to-test-with).
 
 [Try out the examples!](https://alphagov.github.io/accessible-autocomplete/examples/)
+
+---
+
+## Support
+
+The GOV.UK Design System team maintains the accessible autocomplete as a standalone component. However, we’re only able to put in minimal work to support it.
+
+[Read about our plans to maintain this component](https://github.com/alphagov/accessible-autocomplete/issues/532).
+
+[Read more about the types of support we can provide](https://github.com/alphagov/accessible-autocomplete/issues/430).
+
+---
 
 ## Installation / usage
 
@@ -85,6 +91,10 @@ You can also import it using Sass:
 @import "accessible-autocomplete";
 ```
 
+> [!NOTE]
+>
+> When styling the `.autocomplete__input` element, be aware that the `autoselect` option will render a second `.autocomplete__hint` input element for suggestion text. Both elements should be styled to ensure suggestions exactly align with the typed input text.
+
 ### Using with Preact
 
 If you already use Preact in your application, you can import a bundle that will use that:
@@ -100,6 +110,14 @@ preact.render(
 ```
 
 [Try out the Preact example!](https://alphagov.github.io/accessible-autocomplete/examples/preact/)
+
+#### Preact versions
+
+Preact v8.5.3 has been tested to work with the Accessible Autocomplete - although make sure to check out [documented issues](https://github.com/alphagov/accessible-autocomplete/issues).
+
+Preact 10.19.6 has been incompletely tested with the Accessible Autocomplete. No issues were found in Chrome and Firefox, but our automated tests for picking an option using the keyboard failed in Internet Explorer 11 (an issue we could not replicate when testing manually, though).
+
+We recommend you carry out thorough testing if you wish to use this or later versions of Preact.
 
 ### Using with React
 
@@ -123,7 +141,9 @@ ReactDOM.render(
 React v15.5.4 has been tested to work with the Accessible Autocomplete - although make sure to check
 out [documented issues](https://github.com/alphagov/accessible-autocomplete/issues).
 
-React v15.6.2 and 16.0 have been incompletely tested with the Accessible Autocomplete: while no undocumented issues were found, we recommend you carry out thorough testing if you wish to use these or later versions of React.
+React v15.6.2, v16.14.0, v17.0.2, and v18.2.0 have been incompletely tested with the Accessible Autocomplete. No undocumented issues were found (though be aware that [React 18 dropped support for Internet Explorer](https://react.dev/blog/2022/03/08/react-18-upgrade-guide#dropping-support-for-internet-explorer))
+
+We recommend you carry out thorough testing if you wish to use this or later versions of React.
 
 ## API documentation
 
@@ -177,11 +197,38 @@ function suggest (query, populateResults) {
 
 ### Other options
 
-#### `ariaLabelledBy` (default: `undefined`)
+#### `inputClasses` (default: `null`)
 
-Type: `string`
+Type: `string | null`
 
-Set to the value of the `id` attribute on your existing label. When the user navigates to the results the label is the accessible name, satisfying [WCAG Success Criterion 4.1.2](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value.html), and provides context to an assistive technology user.
+Adds custom html classes to the generated `input` element.
+
+If [`autoselect`](#autoselect) is set to `true`, the option [`hintClasses`](#hintClasses) can be configured separately or it will default to the `inputClasses` value.
+
+#### `hintClasses` (default: `null`)
+
+Type: `string | null`
+
+Adds custom html classes to the additional `input` element that appears when what the user typed matches the start of a suggestion.
+
+If [`autoselect`](#autoselect) is set to `true`, the option [`inputClasses`](#inputClasses) will be used as the default value unless `hintClasses` is set to an empty string `''`.
+
+#### `menuAttributes` (default: `{}`)
+
+Type: `Object`
+
+Sets html attributes and their values on the generated `ul` menu element. Useful for adding `aria-labelledby` and setting to the value of the `id` attribute on your existing label, to provide context to an assistive technology user.
+
+> [!NOTE]
+>
+> To maintain assistive technology support, menu attributes `id`, `role` and `onMouseLeave` cannot be overridden using `menuAttributes`. Setting `className` will append to the component default and [`menuClasses`](#menuClasses) values.
+
+
+#### `menuClasses` (default: `null`)
+
+Type: `string | null`
+
+Adds custom html classes to the generated `ul` menu element.
 
 #### `autoselect` (default: `false`)
 
@@ -276,9 +323,13 @@ This object defines templates (functions) that are used for displaying parts of 
 
 `inputValue` is a function that receives one argument, the currently selected suggestion. It returns the string value to be inserted into the input.
 
-`suggestion` is a function that receives one argument, a suggestion to be displayed. It is used when rendering suggestions, and should return a string, which can contain HTML. :warning: **Caution:** because this function allows you to output arbitrary HTML, you should [make sure it's trusted](https://en.wikipedia.org/wiki/Cross-site_scripting), and accessible.
+`suggestion` is a function that receives one argument, a suggestion to be displayed. It is used when rendering suggestions, and should return a string, which can contain HTML.
 
-#### `dropdownArrow` (default: A rectangle pointing down)
+:warning: **Caution:** because this function allows you to output arbitrary HTML, you should [make sure it's trusted](https://en.wikipedia.org/wiki/Cross-site_scripting), and accessible.
+
+If your template includes child elements with defined foreground or background colours, check they display correctly in forced colors modes. For example, Windows high contrast mode.
+
+#### `dropdownArrow` (default: A triangle pointing down)
 
 Type: `Function`
 
@@ -290,25 +341,27 @@ A function that gets passed an object with the property `className` (`{ classNam
 
 Type: `Function`
 
-A function that receives no arguments and should return the text used in the dropdown to indicate that there are no results.
+A function that receives no arguments and returns the text used in the dropdown to indicate that there are no results.
 
 #### `tStatusQueryTooShort` (default: `` (minQueryLength) => `Type in ${minQueryLength} or more characters for results` ``)
 
 Type: `Function`
 
-A function that receives one argument that indicates the minimal amount of characters needed for the dropdown to trigger and should return the text used in the accessibility hint to indicate that the query is too short.
+A function that receives one argument that indicates the minimal amount of characters needed for the dropdown to trigger and returns the text used in the accessibility hint to indicate that the query is too short.
 
 #### `tStatusNoResults` (default: `() => 'No search results'`)
 
 Type: `Function`
 
-A function that receives no arguments and should return the text that is used in the accessibility hint to indicate that there are no results.
+A function that receives no arguments and returns the text that is used in the accessibility hint to indicate that there are no results.
 
 #### `tStatusSelectedOption` (default: `` (selectedOption, length, index) => `${selectedOption} ${index + 1} of ${length} is highlighted` ``)
 
 Type: `Function`
 
-A function that receives two arguments, the selectedOption and the amount of available options, and it should return the text used in the accessibility hint to indicate which option is selected.
+A function that receives three arguments -
+the selectedOption, the count of available options, and the (zero-based) index of the selected option -
+and returns the text used in the accessibility hint to indicate which option is selected.
 
 #### `tStatusResults`
 
@@ -327,13 +380,13 @@ Default:
 
 Type: `Function`
 
-A function that receives two arguments, the count of available options and the return value of `tStatusSelectedOption`, and should return the text used in the accessibility hint to indicate which options are available and which is selected.
+A function that receives two arguments - the count of available options and the return value of `tStatusSelectedOption` - and returns the text used in the accessibility hint to indicate which options are available and which is selected.
 
 #### `tAssistiveHint` (default: `() => 'When autocomplete results are available use up and down arrows to review and enter to select.  Touch device users, explore by touch or with swipe gestures.'`)
 
 Type: `Function`
 
-A function that receives no arguments and should return the text to be assigned as the aria description of the html `input` element, via the `aria-describedby` attribute.
+A function that receives no arguments and returns the text to be assigned as the aria description of the html `input` element, via the `aria-describedby` attribute.
 This text is intended as an initial instruction to the assistive tech user. The `aria-describedby` attribute is automatically removed once user input is detected, in order to reduce screen reader verbosity.
 
 
@@ -399,7 +452,7 @@ accessibleAutocomplete.enhanceSelectElement({
 })
 ```
 
-Any null options will also be filtered out of the options used to populate the `source` of the autocomplete element. To preserve options with no value in the autcomplete then pass a `preserveNullOptions` flag of `true` to `enhanceSelectElement`.
+Any null options will also be filtered out of the options used to populate the `source` of the autocomplete element. To preserve options with no value in the autocomplete, then pass a `preserveNullOptions` flag of `true` to `enhanceSelectElement`.
 
 ## Analytics and tracking
 

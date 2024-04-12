@@ -51,7 +51,10 @@ export default class Autocomplete extends Component {
     tNoResults: () => 'No results found',
     tAssistiveHint: () => 'When autocomplete results are available use up and down arrows to review and enter to select.  Touch device users, explore by touch or with swipe gestures.',
     dropdownArrow: DropdownArrowDown,
-    ariaLabelledBy: undefined
+    menuAttributes: {},
+    inputClasses: null,
+    hintClasses: null,
+    menuClasses: null
   }
 
   elementReferences = {}
@@ -87,6 +90,7 @@ export default class Autocomplete extends Component {
 
     this.handleInputBlur = this.handleInputBlur.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
+    this.handleInputClick = this.handleInputClick.bind(this)
     this.handleInputFocus = this.handleInputFocus.bind(this)
 
     this.pollInputElement = this.pollInputElement.bind(this)
@@ -425,7 +429,10 @@ export default class Autocomplete extends Component {
       tStatusResults,
       tAssistiveHint,
       dropdownArrow: dropdownArrowFactory,
-      ariaLabelledBy
+      menuAttributes,
+      inputClasses,
+      hintClasses,
+      menuClasses
     } = this.props
     const { focused, hovered, menuOpen, options, query, selected, ariaHint, validChoiceMade } = this.state
     const autoselect = this.hasAutoselect()
@@ -438,18 +445,9 @@ export default class Autocomplete extends Component {
       inputFocused && noOptionsAvailable && queryNotEmpty && queryLongEnough
 
     const wrapperClassName = `${cssNamespace}__wrapper`
-
-    const inputClassName = `${cssNamespace}__input`
-    const componentIsFocused = focused !== null
-    const inputModifierFocused = componentIsFocused ? ` ${inputClassName}--focused` : ''
-    const inputModifierType = this.props.showAllValues ? ` ${inputClassName}--show-all-values` : ` ${inputClassName}--default`
+    const statusClassName = `${cssNamespace}__status`
     const dropdownArrowClassName = `${cssNamespace}__dropdown-arrow-down`
     const optionFocused = focused !== -1 && focused !== null
-
-    const menuClassName = `${cssNamespace}__menu`
-    const menuModifierDisplayMenu = `${menuClassName}--${displayMenu}`
-    const menuIsVisible = menuOpen || showNoOptionsFound
-    const menuModifierVisibility = `${menuClassName}--${(menuIsVisible) ? 'visible' : 'hidden'}`
 
     const optionClassName = `${cssNamespace}__option`
 
@@ -462,9 +460,13 @@ export default class Autocomplete extends Component {
       : ''
 
     const assistiveHintID = id + '__assistiveHint'
-    const ariaDescribedProp = (ariaHint) ? {
-      'aria-describedby': assistiveHintID
-    } : null
+    const ariaProps = {
+      'aria-describedby': ariaHint ? assistiveHintID : null,
+      'aria-expanded': menuOpen ? 'true' : 'false',
+      'aria-activedescendant': optionFocused ? `${id}__option--${focused}` : undefined,
+      'aria-owns': `${id}__listbox`,
+      'aria-autocomplete': (this.hasAutoselect()) ? 'both' : 'list'
+    }
 
     let dropdownArrow
 
@@ -477,6 +479,55 @@ export default class Autocomplete extends Component {
         dropdownArrow = <div className={`${cssNamespace}__dropdown-arrow-down-wrapper`} dangerouslySetInnerHTML={{ __html: dropdownArrow }} />
       }
     }
+
+    const inputClassName = `${cssNamespace}__input`
+    const inputClassList = [
+      inputClassName,
+      this.props.showAllValues ? `${inputClassName}--show-all-values` : `${inputClassName}--default`
+    ]
+
+    const componentIsFocused = focused !== null
+    if (componentIsFocused) {
+      inputClassList.push(`${inputClassName}--focused`)
+    }
+
+    if (inputClasses) {
+      inputClassList.push(inputClasses)
+    }
+
+    const menuClassName = `${cssNamespace}__menu`
+    const menuModifierDisplayMenu = `${menuClassName}--${displayMenu}`
+    const menuIsVisible = menuOpen || showNoOptionsFound
+    const menuModifierVisibility = `${menuClassName}--${(menuIsVisible) ? 'visible' : 'hidden'}`
+
+    const menuClassList = [
+      menuClassName,
+      menuModifierDisplayMenu,
+      menuModifierVisibility
+    ]
+
+    if (menuClasses) {
+      menuClassList.push(menuClasses)
+    }
+
+    if (menuAttributes?.class || menuAttributes?.className) {
+      menuClassList.push(menuAttributes?.class || menuAttributes?.className)
+    }
+
+    const computedMenuAttributes = {
+      // Copy the attributes passed as props
+      ...menuAttributes,
+      // And add the values computed for the autocomplete
+      id: `${id}__listbox`,
+      role: 'listbox',
+      className: menuClassList.join(' '),
+      onMouseLeave: this.handleListMouseLeave
+    }
+
+    // Preact would override our computed `className`
+    // with the `class` from the `menuAttributes` so
+    // we need to clean it up from the computed attributes
+    delete computedMenuAttributes.class
 
     return (
       <div className={wrapperClassName} onKeyDown={this.handleKeyDown}>
@@ -493,22 +544,19 @@ export default class Autocomplete extends Component {
           tNoResults={tStatusNoResults}
           tSelectedOption={tStatusSelectedOption}
           tResults={tStatusResults}
+          className={statusClassName}
         />
 
         {hintValue && (
-          <span><input className={hintClassName} readonly tabIndex='-1' value={hintValue} /></span>
+          <span><input className={[hintClassName, hintClasses === null ? inputClasses : hintClasses].filter(Boolean).join(' ')} readonly tabIndex='-1' value={hintValue} /></span>
         )}
 
         <input
-          aria-expanded={menuOpen ? 'true' : 'false'}
-          aria-activedescendant={optionFocused ? `${id}__option--${focused}` : undefined}
-          aria-owns={`${id}__listbox`}
-          aria-autocomplete={(this.hasAutoselect()) ? 'both' : 'list'}
-          {...ariaDescribedProp}
+          {...ariaProps}
           autoComplete='off'
-          className={`${inputClassName}${inputModifierFocused}${inputModifierType}`}
+          className={inputClassList.join(' ')}
           id={id}
-          onClick={(event) => this.handleInputClick(event)}
+          onClick={this.handleInputClick}
           onBlur={this.handleInputBlur}
           {...onChangeCrossLibrary(this.handleInputChange)}
           onFocus={this.handleInputFocus}
@@ -523,13 +571,7 @@ export default class Autocomplete extends Component {
 
         {dropdownArrow}
 
-        <ul
-          className={`${menuClassName} ${menuModifierDisplayMenu} ${menuModifierVisibility}`}
-          onMouseLeave={(event) => this.handleListMouseLeave(event)}
-          aria-labelledby={ariaLabelledBy}
-          id={`${id}__listbox`}
-          role='listbox'
-        >
+        <ul {...computedMenuAttributes}>
           {options.map((option, index) => {
             const showFocused = focused === -1 ? selected === index : focused === index
             const optionModifierFocused = showFocused && hovered === null ? ` ${optionClassName}--focused` : ''
